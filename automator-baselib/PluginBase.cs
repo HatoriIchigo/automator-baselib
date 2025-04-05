@@ -116,14 +116,14 @@ namespace automator_baselib
                 foreach (string key_value in s.Split(new char[] { '&' }))
                 {
                     string[] x = key_value.Split(new char[] { '=' });
-                    if (x.Length != 2) { return new Output("F-cmn-9006", "入力値に異常な値が見つかりました。[入力値: " + s + "]", "", "").toString(); }
+                    if (x.Length != 2) { return new Output("E-cmn-9006", "入力値に異常な値が見つかりました。[入力値: " + s + "]", "", "").toString(); }
                     dict.Add(x[0].Trim(), x[1].Trim());
                 }
                 return "";
             }
             else
             {
-                return new Output("F-cmn-9005", "入力値に異常な値が見つかりました。[入力値: " + s + "]", "", "").toString();
+                return new Output("E-cmn-9005", "入力値に異常な値が見つかりました。[入力値: " + s + "]", "", "").toString();
             }
         }
     }
