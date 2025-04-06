@@ -57,8 +57,8 @@ namespace automator_baselib
                     foreach (string log in this.actionItems[item.Key].Action(input, cmd))
                     {
                         yield return log;
-                        yield break;
                     }
+                    yield break;
                 }
             }
             yield return new Output("E-cmn-9007", "コマンドが見つかりませんでした。[cmd: " + cmd + "]", "", "").toString();
