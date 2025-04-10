@@ -101,11 +101,45 @@ namespace automator_baselib
             return new Output("E-cmn-9008", "コマンドが見つかりませんでした。[cmd: " + cmd + "]", "", "").toString();
         }
 
+        public virtual string CheckInputType(string input, string[] types)
+        {
+            Input i = new Input(input);
+            if (Array.IndexOf(types, "None") >= 0 && i.type == "")
+            {
+                return "";
+            }
+            if (Array.IndexOf(types, i.type) >= 0)
+            {
+                return "";
+            }
+            return new Output("E-cmn-9009", "サポートされていない入力値です。", "", "").toString();
+        }
+
         public virtual string ParseInput(Dictionary<string, string> dict, string input)
         {
-            
+            // input分解
+            Input i = new Input(input);
+            if (i.type == "Dict")
+            {
+                foreach (string key_value in i.content.Split(new char[] { '&' }))
+                {
+                    string[] x = key_value.Split(new char[] { '=' });
+                    if (x.Length != 2) { return new Output("E-cmn-9010", "入力値に異常な値が見つかりました。[入力値: " + i + "]", "", "").toString(); }
+                    dict.Add(x[0].Trim(), x[1].Trim());
+                }
+                return "";
+            }
+            else
+            {
+                if (dict.ContainsKey("&"))
+                {
+                    return new Output("E-cmn-9011", "キーなしの引数がすでに登録されています。[ParseInput]", "", "").toString();
+                }
+                dict.Add("&", i.content);
+            }
             return "";
         }
+
         public virtual string ParseCmd(Dictionary<string, string> dict, string input, string cmd)
         {
             string s = input.Substring(cmd.Length);
@@ -116,8 +150,22 @@ namespace automator_baselib
                 foreach (string key_value in s.Split(new char[] { '&' }))
                 {
                     string[] x = key_value.Split(new char[] { '=' });
-                    if (x.Length != 2) { return new Output("E-cmn-9006", "入力値に異常な値が見つかりました。[入力値: " + s + "]", "", "").toString(); }
-                    dict.Add(x[0].Trim(), x[1].Trim());
+                    if (x.Length != 2)
+                    {
+                        if (dict.ContainsKey("&"))
+                        {
+                            return new Output("E-cmn-9006", "キーなしの引数がすでに登録されています。[ParseCmd]", "", "").toString();
+                        }
+                        else
+                        {
+                            dict.Add("&", x[0]);
+                        }
+                        // return new Output("E-cmn-9006", "入力値に異常な値が見つかりました。[入力値: " + s + "]", "", "").toString();
+                    }
+                    else
+                    {
+                        dict.Add(x[0].Trim(), x[1].Trim());
+                    }
                 }
                 return "";
             }
